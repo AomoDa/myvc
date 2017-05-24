@@ -1,0 +1,148 @@
+---
+title: "hw1"
+author: "Your Nmae"
+date: "2017年5月24日"
+output:
+  word_document:
+    toc: yes
+  html_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+#Q1
+
+在置信度为0.95下，变量wage的置信区间为[10.82,11.28].
+
+```{r, message=FALSE, warning=FALSE}
+library(Ecdat)
+data(Bwages)
+t.test(Bwages$wage,conf.level = 0.95)$conf.int
+```
+
+#Q2
+
+##a
+
+```{r, message=FALSE, warning=FALSE}
+library(xlsx)
+x <- read.xlsx2('MacEcoData.xlsx',
+                sheetName = 'data1',
+                colClasses = rep('numeric',4))
+logx <- log(x)
+str(logx)
+lm1 <- lm(M2~.,data=logx)
+summary(lm1)
+
+par(mfrow=c(2,2))
+plot(lm1)
+par(mfrow=c(1,1))
+```
+
+##b
+
+- VIF 小于4，所以不存在多重共线性。
+- 残差服从正态分布，因为W检验的p值大于0.05.
+- 第83和132个点为强影响点。
+
+```{r, message=FALSE, warning=FALSE}
+library(car)
+
+
+vif(lm1)
+
+shapiro.test(lm1$residuals)
+par(mfrow=c(1,3))
+residualPlot(lm1)
+qqPlot(lm1)
+hist(lm1$residuals)
+par(mfrow=c(1,1))
+
+influencePlot(lm1)
+```
+
+##c
+
+数据为月度数据，预测5年也就是预测60个月的数据。结果如下：
+
+```{r}
+x$ty <- 'old'
+
+for (i in (nrow(x)+1):(nrow(x)+5*12)) {
+   x[i,2] <- x$CPI[i-12]*1.05
+   x[i,3] <- x$ir[i-12]*1
+   x[i,4] <- x$GY[i-12]*1.05
+   x[i,5] <- 'new'
+}
+
+log_pred_data <- log(x[x$ty=='new',-c(1,5)])
+summary(log_pred_data)
+
+pred <- exp(predict.lm(lm1,newdata = log_pred_data))
+as.vector(pred)
+```
+
+#Q3
+
+最终的方程为：
+
+$$Y=0.68693 -0.23797 x_1 +0.03124 x_4 +  0.63793 x_5 - 0.18432x_7$$
+
+```{r}
+xx <- read.xlsx2('MicEcoData.xlsx',
+                 sheetName = 'stepReg',
+                 colClasses = rep('numeric',8))
+names(xx) <- c('y','x1','x2','x3','x4','x5','x6','x7')
+str(xx)
+step(object = lm(y~.,data=xx), direction = 'both')
+lm2 <- lm(formula = y ~ x1 + x4 + x5 + x6 + x7, data = xx)
+summary(lm2)
+lm3 <- lm(formula = y ~ x1 + x4 + x5  + x7, data = xx)
+summary(lm3)
+anova(lm2,lm3)
+```
+
+#Q4
+
+```{r}
+q4 <- c(-1,0,1,2,39)
+for (i in 1:length(q4)) {
+	if(!is.null(switch(q4[i],1,2,3,4))){
+		cat(q4[i],'与c(1:4)有重复，索引为',i ,'\n')
+	}
+
+}
+
+```
+
+#Q5
+
+##a
+
+```{r, message=FALSE, warning=FALSE}
+library(AER)
+data('HousePrices')
+
+##a
+subset(HousePrices,subset = price<3e4,select = c('price','bedrooms','bathrooms'))
+```
+
+##b
+
+```{r}
+newdf <- HousePrices
+newdf$rooms <- newdf$bedrooms+newdf$bathrooms
+str(newdf)
+```
+
+##c
+
+```{r}
+table(newdf$bedrooms)
+barplot( table(newdf$bedrooms))
+```
+
