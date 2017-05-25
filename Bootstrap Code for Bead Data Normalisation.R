@@ -151,33 +151,37 @@ names(matrix.of.results)<-names.for.results.matrix
 #what you should get is a vector of non-missing obs that form the basis for this rep's bootstrap sample
 #!is.na is how to remove missing; [,1] stuff is column 1 for that data frame or matrix
 #note that this is 1 3 5, corresponding to A C E columns
-NTC.Tube.1.Rep1.sample.from.this<- bootfromthis.control.data[!is.na(bootfromthis.control.data[,1]),1]
-NTC.Tube.1.Rep2.sample.from.this<- bootfromthis.control.data[!is.na(bootfromthis.control.data[,3]),3]
-NTC.Tube.1.Rep3.sample.from.this<- bootfromthis.control.data[!is.na(bootfromthis.control.data[,5]),5] 
+
+# NTC.Tube.1.Rep1.sample.from.this<- unclass(bootfromthis.control.data[!is.na(bootfromthis.control.data[,1]),1])
+NTC.Tube.1.Rep1.sample.from.this<- as.vector(unlist(unclass(bootfromthis.control.data[!is.na(bootfromthis.control.data[,1]),1])[1]))
+
+NTC.Tube.1.Rep2.sample.from.this<- as.vector(unlist(unclass(bootfromthis.control.data[!is.na(bootfromthis.control.data[,3]),3])[1]))
+NTC.Tube.1.Rep3.sample.from.this<- as.vector(unlist(unclass(bootfromthis.control.data[!is.na(bootfromthis.control.data[,5]),5])[1])) 
+  
 N.of.NTC.Tube.1<-c(length(NTC.Tube.1.Rep1.sample.from.this),
             length(NTC.Tube.1.Rep2.sample.from.this),
             length(NTC.Tube.1.Rep3.sample.from.this))
 
 #same thing but note that this is 2 4 6, corresponding to B D F columns
-NTC.Tube.2.Rep1.sample.from.this<- bootfromthis.control.data[!is.na(bootfromthis.control.data[,2]),2]
-NTC.Tube.2.Rep2.sample.from.this<- bootfromthis.control.data[!is.na(bootfromthis.control.data[,4]),4]
-NTC.Tube.2.Rep3.sample.from.this<- bootfromthis.control.data[!is.na(bootfromthis.control.data[,6]),6] 
+NTC.Tube.2.Rep1.sample.from.this<- as.vector(unlist(unclass(bootfromthis.control.data[!is.na(bootfromthis.control.data[,2]),2])[1]))
+NTC.Tube.2.Rep2.sample.from.this<- as.vector(unlist(unclass(bootfromthis.control.data[!is.na(bootfromthis.control.data[,4]),4])[1]))
+NTC.Tube.2.Rep3.sample.from.this<- as.vector(unlist(unclass(bootfromthis.control.data[!is.na(bootfromthis.control.data[,6]),6])[1])) 
 N.of.NTC.Tube.2<-c(length(NTC.Tube.2.Rep1.sample.from.this),
                    length(NTC.Tube.2.Rep2.sample.from.this),
                    length(NTC.Tube.2.Rep3.sample.from.this))
 
 #repeat for SC1 except change column numbers (add 6 to each NTC column number)
-SC1.Tube.1.Rep1.sample.from.this<- bootfromthis.control.data[!is.na(bootfromthis.control.data[,7]),7]
-SC1.Tube.1.Rep2.sample.from.this<- bootfromthis.control.data[!is.na(bootfromthis.control.data[,9]),9]
-SC1.Tube.1.Rep3.sample.from.this<- bootfromthis.control.data[!is.na(bootfromthis.control.data[,11]),11] 
+SC1.Tube.1.Rep1.sample.from.this<- as.vector(unlist(unclass(bootfromthis.control.data[!is.na(bootfromthis.control.data[,7]),7])[1]))
+SC1.Tube.1.Rep2.sample.from.this<- as.vector(unlist(unclass(bootfromthis.control.data[!is.na(bootfromthis.control.data[,9]),9])[1]))
+SC1.Tube.1.Rep3.sample.from.this<- as.vector(unlist(unclass(bootfromthis.control.data[!is.na(bootfromthis.control.data[,11]),11])[1])) 
 N.of.SC1.Tube.1<-c(length(SC1.Tube.1.Rep1.sample.from.this),
                    length(SC1.Tube.1.Rep2.sample.from.this),
                    length(SC1.Tube.1.Rep3.sample.from.this))
 
 #same thing but note that this is 6+2 6+4 6+6, corresponding to B D F columns
-SC1.Tube.2.Rep1.sample.from.this<- bootfromthis.control.data[!is.na(bootfromthis.control.data[,8]),8]
-SC1.Tube.2.Rep2.sample.from.this<- bootfromthis.control.data[!is.na(bootfromthis.control.data[,10]),10]
-SC1.Tube.2.Rep3.sample.from.this<- bootfromthis.control.data[!is.na(bootfromthis.control.data[,12]),12] 
+SC1.Tube.2.Rep1.sample.from.this<- as.vector(unlist(unclass(bootfromthis.control.data[!is.na(bootfromthis.control.data[,8]),8])[1]))
+SC1.Tube.2.Rep2.sample.from.this<- as.vector(unlist(unclass(bootfromthis.control.data[!is.na(bootfromthis.control.data[,10]),10])[1]))
+SC1.Tube.2.Rep3.sample.from.this<- as.vector(unlist(unclass(bootfromthis.control.data[!is.na(bootfromthis.control.data[,12]),12])[1])) 
 N.of.SC1.Tube.2<-c(length(SC1.Tube.2.Rep1.sample.from.this),
                    length(SC1.Tube.2.Rep2.sample.from.this),
                    length(SC1.Tube.2.Rep3.sample.from.this))
@@ -186,17 +190,17 @@ N.of.SC1.Tube.2<-c(length(SC1.Tube.2.Rep1.sample.from.this),
 #this picks off the observations from the bacteria
 #I'm going to call this Bac for shorthand instead of "K.Pneumo" or whatever
 #format is the same as NTC stuff with respect to column numbers because it is on the second sheet
-Bac.Tube.1.Rep1.sample.from.this<- bootfromthis.experiment.data[!is.na(bootfromthis.experiment.data[,1]),1]
-Bac.Tube.1.Rep2.sample.from.this<- bootfromthis.experiment.data[!is.na(bootfromthis.experiment.data[,3]),3]
-Bac.Tube.1.Rep3.sample.from.this<- bootfromthis.experiment.data[!is.na(bootfromthis.experiment.data[,5]),5] 
+Bac.Tube.1.Rep1.sample.from.this<- as.vector(unlist(unclass(bootfromthis.experiment.data[!is.na(bootfromthis.experiment.data[,1]),1])[1]))
+Bac.Tube.1.Rep2.sample.from.this<- as.vector(unlist(unclass(bootfromthis.experiment.data[!is.na(bootfromthis.experiment.data[,3]),3])[1]))
+Bac.Tube.1.Rep3.sample.from.this<- as.vector(unlist(unclass(bootfromthis.experiment.data[!is.na(bootfromthis.experiment.data[,5]),5] )[1]))
 N.of.Bac.Tube.1<-c(length(Bac.Tube.1.Rep1.sample.from.this),
                    length(Bac.Tube.1.Rep2.sample.from.this),
                    length(Bac.Tube.1.Rep3.sample.from.this))
 
 #same thing but note that this is 2 4 6, corresponding to B D F columns
-Bac.Tube.2.Rep1.sample.from.this<- bootfromthis.experiment.data[!is.na(bootfromthis.experiment.data[,2]),2]
-Bac.Tube.2.Rep2.sample.from.this<- bootfromthis.experiment.data[!is.na(bootfromthis.experiment.data[,4]),4]
-Bac.Tube.2.Rep3.sample.from.this<- bootfromthis.experiment.data[!is.na(bootfromthis.experiment.data[,6]),6] 
+Bac.Tube.2.Rep1.sample.from.this<- as.vector(unlist(unclass(bootfromthis.experiment.data[!is.na(bootfromthis.experiment.data[,2]),2])[1]))
+Bac.Tube.2.Rep2.sample.from.this<- as.vector(unlist(unclass(bootfromthis.experiment.data[!is.na(bootfromthis.experiment.data[,4]),4])[1]))
+Bac.Tube.2.Rep3.sample.from.this<- as.vector(unlist(unclass(bootfromthis.experiment.data[!is.na(bootfromthis.experiment.data[,6]),6])[1])) 
 N.of.Bac.Tube.2<-c(length(Bac.Tube.2.Rep1.sample.from.this),
                    length(Bac.Tube.2.Rep2.sample.from.this),
                    length(Bac.Tube.2.Rep3.sample.from.this))
