@@ -1,0 +1,19 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+#Q1
+
+$$Y=\beta_0 + \beta_1 X_1$$
+
+回归系数T检验原理：
+
+$H_0: \hat \beta=0$
+
+$H_1: \hat \beta \neq 0$
+
+构造统计量
+
+$$t\_stat=\frac{\hat \beta}{SE}$$

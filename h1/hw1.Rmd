@@ -21,7 +21,11 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r, message=FALSE, warning=FALSE}
 library(Ecdat)
 data(Bwages)
-t.test(Bwages$wage,conf.level = 0.95)$conf.int
+se <- sd(Bwages$wage)/sqrt(nrow(Bwages))
+# upper
+mean(Bwages$wage) +qnorm(0.975)*se
+#lower
+mean(Bwages$wage) -qnorm(0.975)*se
 ```
 
 #Q2

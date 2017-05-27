@@ -1,0 +1,249 @@
+---
+title: "hw2"
+author: "Your Nmae"
+date: "2017年5月27日"
+output:
+  word_document:
+    toc: yes
+  html_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Q1
+
+```{r}
+x=seq(from = -5,to = 5,length.out = 100)
+plot(x,dnorm(x),xlab='',ylab='',
+     main='正态分布概率密度',type='l',ylim=c(0,1))
+points(x,dnorm(x,mean = 0,sd = 0.5),
+       type='l',lty=2,col='red')
+points(x,dnorm(x,mean = 0,sd = 2),
+       type='l',lty=3,col='blue')
+points(x,dnorm(x,mean = 2,sd = 1),
+       type='l',lty=4,col='orange')
+legend('topright',
+       col=c('black','red','blue','orange'),
+       lty=1:4,ncol=2,
+       legend = c('mu=0,sd=1',
+                  'mu=0,sd=0.5',
+                  'mu=0,sd=2',
+                  'mu=2,sd=1'))
+```
+
+#Q2
+
+##2.1
+```{r}
+x <- read.csv('TRD_Index.txt',
+              sep = '\t',
+              header = T,
+              stringsAsFactors = F)
+x$Trddt <- as.Date(x$Trddt)
+summary(x)
+```
+
+##2.2
+
+```{r}
+x1 <- subset(x,subset = Indexcd==1)
+head(x1)
+```
+
+##2.3
+
+```{r}
+x2 <- subset(x,subset = Indexcd==399106)
+head(x2)
+```
+
+##2.4
+
+```{r}
+par(mfrow=c(1,2))
+plot(x1$Trddt,x1$Retindex,type='l',main='上证综指',xlab='日期')
+plot(x2$Trddt,x2$Retindex,type='l',main='深证综指',xlab='日期')
+
+```
+
+##2.5
+
+```{r}
+cor(x1$Retindex,x2$Retindex)
+```
+
+#Q3
+
+```{r, message=FALSE, warning=FALSE}
+library(Ecdat)
+data("Bwages")
+# 置信度为0.95下，变量wage的置信区间
+t.test(Bwages$wage)$conf
+```
+
+#Q4
+
+```{r}
+plot(density(Bwages$wage),main='概率密度图',xlab='')
+a <- seq(min(Bwages$wage),max(Bwages$wage),length.out = 200)
+points(a,
+       dnorm(a,mean = mean(Bwages$wage),sd = sd(Bwages$wage)),
+       type='l',
+       col='red',
+       lty=2)
+legend('topright',
+       legend = c('原始数据','正态分布'),
+       col=c('black','red'),
+       lty=c(1,2))
+```
+
+#Q5
+
+```{r}
+a <- c(0.225,0.262,0.217,0.240,0.230,0.229,0.235,0.217)
+b <- c(0.209,0.205,0.196,0.210,0.202,0.207,0.224,0.223)
+t.test(a,bvar.equal = TRUE,alternative = 'two.sided',conf.level = 0.95)
+```
+
+#Q6
+
+t检验p值为0.6626，大于0.05，因此无法拒绝原假设，wage的均值为11。
+
+```{r}
+t.test(Bwages$wage,mu = 11,conf.level = 0.95)
+```
+
+#Q7
+
+```{r}
+x <- c(1952	,1956,	1960,	1964	,1968	,1972	,1976	,1980,
+    1984,	1988,	1992	,1996	,2000	,2004	,2008	,2012)
+y <- c(29.3	,28.8	,28.5,	28.4,	29.4,	27.6	,27.7	,27.7,
+       27.8	,27.4	,27.8	,27.1	,27.3	,27.1	,27.0	,27.5)
+```
+
+##7.1
+
+```{r}
+plot(x,y,main='散点图')
+```
+
+##7.2 & 7.3
+
+```{r}
+lm1 <- lm(y~x)
+summary(lm1)
+```
+
+##7.4
+
+
+$$y=-0.033676*2016+94.646765 = 26.755$$
+
+```{r}
+predict(lm1,newdata = data.frame(x=2016))
+```
+
+
+#Q8
+
+##8.1
+
+```{r}
+x <- c(20	,25	,30,	35,	40,	50	,60,	65,	70,	75	,80	,90)
+y <- c(1.81	,1.70	,1.65	,1.55	,1.48	,1.40	,1.30	,1.26,	1.24,	1.21,	1.20	,1.18)
+plot(x,y)
+```
+
+##8.2 & 8.3
+
+```{r}
+lm2 <- lm(y~x+I(x^2))
+summary(lm2)
+```
+
+##8.4
+
+```{r}
+predict(lm2,newdata = data.frame(x=95))
+```
+
+
+#Q9
+
+##9.1
+
+```{r, message=FALSE, warning=FALSE}
+library(xlsx)
+x <- read.xlsx2('MacEcoData.xlsx',
+                sheetName = 'data1',
+                colClasses = rep('numeric',4))
+logx <- log(x)
+str(logx)
+lm3 <- lm(M2~.,data=logx)
+summary(lm3)
+
+par(mfrow=c(2,2))
+plot(lm3)
+par(mfrow=c(1,1))
+```
+
+##9.2
+
+- VIF 小于4，所以不存在多重共线性。
+- 残差服从正态分布，因为W检验的p值大于0.05.
+- 第83和132个点为强影响点。
+
+```{r, message=FALSE, warning=FALSE}
+library(car)
+library(fBasics)
+
+vif(lm3)
+
+shapiro.test(lm3$residuals)
+par(mfrow=c(1,3))
+residualPlot(lm3,main='residualPlot')
+qqnormPlot(lm3$residuals)
+hist(lm3$residuals,main='Histogram of Residuals')
+par(mfrow=c(1,1))
+
+influencePlot(lm3)
+```
+
+##9.3
+
+```{r}
+x$ty <- 1
+# 预测 5*12的数据
+for (i in (nrow(x)+1):(nrow(x)+5*12)) {
+   x[i,2] <- x$CPI[i-12]*1.05
+   x[i,3] <- x$ir[i-12]*1
+   x[i,4] <- x$GY[i-12]*1.05
+   x[i,5] <- 2
+}
+pred <- exp(predict.lm(lm3,newdata = log(x[x$ty==2,-c(1,5)])))
+as.vector(pred)
+```
+
+#Q10
+
+最终的方程为：
+
+$$Y=0.68693 -0.23797 x_1 +0.03124 x_4 +  0.63793 x_5 - 0.18432x_7$$
+
+```{r}
+xx <- read.xlsx2('MicEcoData.xlsx',
+                 sheetName = 'stepReg',
+                 colClasses = rep('numeric',8))
+names(xx) <- c('y','x1','x2','x3','x4','x5','x6','x7')
+str(xx)
+step(object = lm(y~.,data=xx), direction = 'both')
+lm2 <- lm(formula = y ~ x1 + x4 + x5 + x6 + x7, data = xx)
+summary(lm2)
+lm3 <- lm(formula = y ~ x1 + x4 + x5  + x7, data = xx)
+summary(lm3)
+anova(lm2,lm3)
+
