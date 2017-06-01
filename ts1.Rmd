@@ -1,0 +1,133 @@
+---
+title: "Untitled"
+author: "Your Nmae"
+date: "2017年6月1日"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# 导入数据
+
+从老师提供的网站上下载了2015年1月7日到2017年5月24日的欧元对美元的周汇率数据，一共有125周的数据。下表是汇率的简单统计。
+
+-----
+
+Min| 1st Qu.|  Median |   Mean |3rd Qu.  |  Max. 
+-----|------|---------|--------|---------|-------
+1.043 |  1.079 |  1.106  | 1.102   |1.124  | 1.186 
+
+-----
+
+
+```{r, message=FALSE, warning=FALSE}
+library(lattice)
+library(car)
+USD_EUR <- read.csv('USD_EUR.CSV')
+USD_EUR_TS <- ts(USD_EUR$USD.EUR,frequency = 4)
+xyplot.ts(USD_EUR_TS)
+```
+
+# 时间序列拆解
+
+```{r}
+plot(decompose(USD_EUR_TS,type = 'a'))
+plot(decompose(USD_EUR_TS,type = 'm'))
+```
+
+# Holt’s exponential smoothing
+
+Smoothing parameters:
+- alpha: 0.9423059
+- beta : 0.03771566
+- gamma: 1
+
+
+Coefficients:
+          [,1]
+- a  1.116242705
+- b  0.001161812
+- s1 0.001529603
+- s2 0.002370713
+- s3 0.004323468
+- s4 0.003457295
+
+```{r}
+library(forecast)
+m1 <- HoltWinters(USD_EUR_TS)
+m1
+plot(m1)
+# 残差分析
+qqPlot(residuals(m1))
+m1.rmse <- sqrt(mean(residuals(m1)^2))
+m1.rmse
+# 预测
+m1.pred <- predict(m1,n.ahead = 8)
+m1.pred
+```
+
+#ARIMA 
+
+
+
+
+```{r}
+set.seed(2017)
+m2 <- auto.arima(USD_EUR_TS,seasonal = FALSE)
+m2
+plot(m2)
+m3 <- auto.arima(USD_EUR_TS,seasonal = TRUE)
+m3
+plot(m3)
+
+#诊断
+tsdiag(m2)
+tsdiag(m3)
+# RMSE
+m2.rmse <- sqrt(mean(residuals(m2)^2))
+m2.rmse
+m3.rmse <- sqrt(mean(residuals(m3)^2))
+m3.rmse
+# 预测
+m2.pred <- forecast.Arima(m2,h = 8)
+m2.pred
+plot(m2.pred)
+m3.pred <- forecast.Arima(m3,h = 8)
+m3.pred
+plot(m3.pred)
+```
+
+#ARCH
+
+```{r, message=FALSE, warning=FALSE}
+library(fGarch)
+m4 <- garchFit(formula = ~1+garch(1,0),data = USD_EUR_TS,trace = F,cond.dist='norm')
+m4
+summary(m4)
+plot(m4,which=3)
+plot(m4,which=7)
+
+# rmse
+m4.rmse <- sqrt(mean(residuals(m4)^2))
+m4.rmse
+# 预测
+m4.pred <- predict(m4,h=8)
+m4.pred
+```
+
+#Conclusion
+
+m2的RMSE最小，因此选择模型2，确定使用ARIMA作为我们的预测模型。
+
+RMSE :
+
+-m1 : 0.01346817
+-m2 : 0.01159095
+-m3 : 0.01179669
+-m4 : 0.03255242
+
